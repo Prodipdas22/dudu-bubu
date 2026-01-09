@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story Game</title>
+
+<style>
+body{
+  margin:0;
+  background:linear-gradient(135deg,#ffb3c6,#ffc2d1,#ffcad4);
+  font-family:Arial;
+  overflow:hidden;
+}
+
+/* START SCREEN */
+#startScreen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+
+#startScreen button{
+  font-size:22px;
+  padding:18px 35px;
+  border:none;
+  border-radius:40px;
+  background:#ff4d6d;
+  color:white;
+}
+
+/* ROTATE */
+#rotateWarning{
+  position:fixed;
+  inset:0;
+  background:#000;
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
+  font-size:22px;
+}
+
+video{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:88vw;
+  max-height:88vh;
+  object-fit:contain;
+  border-radius:18px;
+  box-shadow:0 25px 70px rgba(0,0,0,.45);
+  opacity:0;
+  transition:opacity .4s;
+}
+
+#ui{
+  position:fixed;
+  bottom:40px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:14px;
+}
+
+button{
+  padding:14px 22px;
+  border:none;
+  border-radius:30px;
+  font-size:16px;
+  background:#ff4d6d;
+  color:white;
+}
+
+.secondary{background:#6c757d;}
+
+#soundBtn{
+  position:fixed;
+  top:15px;
+  right:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="rotateWarning">📱 Rotate phone to landscape</div>
+
+<div id="startScreen">
+  <button onclick="startGame()">▶ START GAME</button>
+</div>
+
+<video id="player" playsinline></video>
+
+<div id="soundBtn">
+  <button onclick="toggleSound()">🔇 Sound</button>
+</div>
+
+<div id="ui"></div>
+
+<script>
+const player=document.getElementById("player");
+const ui=document.getElementById("ui");
+let sound=false;
+
+/* ROTATION */
+function checkRotate(){
+  document.getElementById("rotateWarning").style.display=
+    window.innerHeight>window.innerWidth?"flex":"none";
+}
+window.onresize=checkRotate;
+checkRotate();
+
+/* SOUND */
+function toggleSound(){
+  sound=!sound;
+  player.muted=!sound;
+  document.querySelector("#soundBtn button").innerText =
+    sound?"🔊 Sound":"🔇 Sound";
+}
+
+/* PLAY VIDEO */
+function playVideo(src, next){
+  ui.innerHTML="";
+  player.style.opacity=0;
+  player.src=src;
+  player.muted=!sound;
+  player.load();
+  player.onloadeddata=()=>{
+    player.play();
+    player.style.opacity=1;
+  };
+  player.onended=()=>next && next();
+}
+
+/* OPTIONS */
+function options(arr){
+  ui.innerHTML="";
+  arr.forEach(o=>{
+    let b=document.createElement("button");
+    b.textContent=o.text;
+    if(o.secondary) b.classList.add("secondary");
+    b.onclick=o.action;
+    ui.appendChild(b);
+  });
+}
+
+/* GAME START */
+function startGame(){
+  document.getElementById("startScreen").style.display="none";
+  playVideo("videos/scene 1.mp4", ()=>{
+    options([{text:"Continue ▶ ", action:scene2}]);
+  });
+}
+
+function scene2(){
+  playVideo("videos/scene 2.mp4", ()=>{
+    options([
+      {text:"Accept 🎂", action:cake},
+      {text:"Reject ❌", action:reject, secondary:true}
+    ]);
+  });
+}
+
+function cake(){
+  playVideo("videos/condition 1.mp4", ()=>{
+    options([
+      {text:"Cut Cake 🎂", action:give},
+    ]);
+  });
+}
+
+function give(){
+  playVideo("videos/condition 1_2.mp4", ()=>{
+    options([{text:"Treat 🍰", action:eat}]);
+  });
+}
+
+function eat(){
+  playVideo("videos/condition 1_3.mp4", ()=>{
+    options([{text:"Take gift 🎁", action:scene4}]);
+  });
+}
+
+
+function reject(){
+  playVideo("videos/scene 3.mp4", ()=>{
+    options([{text:"😡 Continue ▶ ", action:giftangry}]);
+  });
+}
+
+function giftangry(){
+  playVideo("videos/scene 4.mp4", ()=>{
+    options([{text:"☺️ Continue 🎉", action:cake}]);
+  });
+}
+
+function scene4(){
+  playVideo("videos/scene 4.mp4", ()=>{
+    options([{text:"Thank Youu 😊", action:finale}]);
+  });
+}
+
+function finale(){
+  playVideo("videos/final.mp4", ()=>{
+    options([{text:"Play Again 🔁", action:()=>location.reload()}]);
+  });
+}
+</script>
+
+</body>
+</html>
