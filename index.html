@@ -32,19 +32,24 @@ body{
   color:white;
 }
 
-/* ROTATE */
-#rotateWarning{
+/* ROTATE HINT (NON-BLOCKING) */
+#rotateHint{
   position:fixed;
-  inset:0;
-  background:#000;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.7);
   color:#fff;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:99;
-  font-size:22px;
+  padding:8px 16px;
+  border-radius:20px;
+  font-size:14px;
+  z-index:50;
+  opacity:0;
+  transition:opacity .4s;
+  pointer-events:none;
 }
 
+/* VIDEO */
 video{
   position:fixed;
   top:50%;
@@ -59,6 +64,7 @@ video{
   transition:opacity .4s;
 }
 
+/* UI */
 #ui{
   position:fixed;
   bottom:40px;
@@ -89,7 +95,7 @@ button{
 
 <body>
 
-<div id="rotateWarning">📱 Rotate phone to landscape</div>
+<div id="rotateHint">📱 Please rotate your phone</div>
 
 <div id="startScreen">
   <button onclick="startGame()">▶ START GAME</button>
@@ -104,62 +110,67 @@ button{
 <div id="ui"></div>
 
 <script>
-const player=document.getElementById("player");
-const ui=document.getElementById("ui");
-let sound=false;
+const player = document.getElementById("player");
+const ui = document.getElementById("ui");
+let sound = false;
 
-/* ROTATION */
-function checkRotate(){
-  document.getElementById("rotateWarning").style.display=
-    window.innerHeight>window.innerWidth?"flex":"none";
+/* ROTATE HINT */
+function showRotateHint(){
+  const hint = document.getElementById("rotateHint");
+  if(window.innerHeight > window.innerWidth){
+    hint.style.opacity = 1;
+    setTimeout(()=>hint.style.opacity = 0, 3000);
+  } else {
+    hint.style.opacity = 0;
+  }
 }
-window.onresize=checkRotate;
-checkRotate();
+window.addEventListener("load", showRotateHint);
+window.addEventListener("resize", showRotateHint);
 
 /* SOUND */
 function toggleSound(){
-  sound=!sound;
-  player.muted=!sound;
+  sound = !sound;
+  player.muted = !sound;
   document.querySelector("#soundBtn button").innerText =
-    sound?"🔊 Sound":"🔇 Sound";
+    sound ? "🔊 Sound" : "🔇 Sound";
 }
 
 /* PLAY VIDEO */
 function playVideo(src, next){
-  ui.innerHTML="";
-  player.style.opacity=0;
-  player.src=src;
-  player.muted=!sound;
+  ui.innerHTML = "";
+  player.style.opacity = 0;
+  player.src = src;
+  player.muted = !sound;
   player.load();
-  player.onloadeddata=()=>{
+  player.onloadeddata = ()=>{
     player.play();
-    player.style.opacity=1;
+    player.style.opacity = 1;
   };
-  player.onended=()=>next && next();
+  player.onended = ()=> next && next();
 }
 
 /* OPTIONS */
 function options(arr){
-  ui.innerHTML="";
+  ui.innerHTML = "";
   arr.forEach(o=>{
-    let b=document.createElement("button");
-    b.textContent=o.text;
+    let b = document.createElement("button");
+    b.textContent = o.text;
     if(o.secondary) b.classList.add("secondary");
-    b.onclick=o.action;
+    b.onclick = o.action;
     ui.appendChild(b);
   });
 }
 
-/* GAME START */
+/* GAME FLOW */
 function startGame(){
   document.getElementById("startScreen").style.display="none";
-  playVideo("assets/scene 1.mp4", ()=>{
-    options([{text:"Continue ▶ ", action:scene2}]);
+  playVideo("assets/scene_1.mp4", ()=>{
+    options([{text:"Continue ▶", action:scene2}]);
   });
 }
 
 function scene2(){
-  playVideo("assets/scene 2.mp4", ()=>{
+  playVideo("assets/scene_2.mp4", ()=>{
     options([
       {text:"Accept 🎂", action:cake},
       {text:"Reject ❌", action:reject, secondary:true}
@@ -168,41 +179,38 @@ function scene2(){
 }
 
 function cake(){
-  playVideo("assets/condition 1.mp4", ()=>{
-    options([
-      {text:"Cut Cake 🎂", action:give},
-    ]);
+  playVideo("assets/condition_1.mp4", ()=>{
+    options([{text:"Cut Cake 🎂", action:give}]);
   });
 }
 
 function give(){
-  playVideo("assets/condition 1_2.mp4", ()=>{
+  playVideo("assets/condition_1_2.mp4", ()=>{
     options([{text:"Treat 🍰", action:eat}]);
   });
 }
 
 function eat(){
-  playVideo("assets/condition 1_3.mp4", ()=>{
-    options([{text:"Take gift 🎁", action:scene4}]);
+  playVideo("assets/condition_1_3.mp4", ()=>{
+    options([{text:"Take Gift 🎁", action:scene4}]);
   });
 }
 
-
 function reject(){
-  playVideo("assets/scene 3.mp4", ()=>{
-    options([{text:"😡 Continue ▶ ", action:giftangry}]);
+  playVideo("assets/scene_3.mp4", ()=>{
+    options([{text:"😡 Continue ▶", action:giftangry}]);
   });
 }
 
 function giftangry(){
-  playVideo("assets/scene 4.mp4", ()=>{
+  playVideo("assets/scene_4.mp4", ()=>{
     options([{text:"☺️ Continue 🎉", action:cake}]);
   });
 }
 
 function scene4(){
-  playVideo("assets/scene 4.mp4", ()=>{
-    options([{text:"Thank Youu 😊", action:finale}]);
+  playVideo("assets/scene_4.mp4", ()=>{
+    options([{text:"Thank You 😊", action:finale}]);
   });
 }
 
