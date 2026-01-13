@@ -164,13 +164,13 @@ function options(arr){
 /* GAME FLOW */
 function startGame(){
   document.getElementById("startScreen").style.display="none";
-  playVideo("assets/scene_1.mp4", ()=>{
+  playVideo("assets/scene 1.mp4", ()=>{
     options([{text:"Continue ▶", action:scene2}]);
   });
 }
 
 function scene2(){
-  playVideo("assets/scene_2.mp4", ()=>{
+  playVideo("assets/scene 2.mp4", ()=>{
     options([
       {text:"Accept 🎂", action:cake},
       {text:"Reject ❌", action:reject, secondary:true}
@@ -179,37 +179,37 @@ function scene2(){
 }
 
 function cake(){
-  playVideo("assets/condition_1.mp4", ()=>{
+  playVideo("assets/condition 1.mp4", ()=>{
     options([{text:"Cut Cake 🎂", action:give}]);
   });
 }
 
 function give(){
-  playVideo("assets/condition_1_2.mp4", ()=>{
+  playVideo("assets/condition 1_2.mp4", ()=>{
     options([{text:"Treat 🍰", action:eat}]);
   });
 }
 
 function eat(){
-  playVideo("assets/condition_1_3.mp4", ()=>{
+  playVideo("assets/condition 1_3.mp4", ()=>{
     options([{text:"Take Gift 🎁", action:scene4}]);
   });
 }
 
 function reject(){
-  playVideo("assets/scene_3.mp4", ()=>{
+  playVideo("assets/scene 3.mp4", ()=>{
     options([{text:"😡 Continue ▶", action:giftangry}]);
   });
 }
 
 function giftangry(){
-  playVideo("assets/scene_4.mp4", ()=>{
+  playVideo("assets/scene 4.mp4", ()=>{
     options([{text:"☺️ Continue 🎉", action:cake}]);
   });
 }
 
 function scene4(){
-  playVideo("assets/scene_4.mp4", ()=>{
+  playVideo("assets/scene 4.mp4", ()=>{
     options([{text:"Thank You 😊", action:finale}]);
   });
 }
